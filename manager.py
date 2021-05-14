@@ -46,7 +46,7 @@ def showData():
 def returnResponsesPercentage(word):
     conn = sqlite3.connect('chatml.db')
     c = conn.cursor()
-    c.execute(f'''SELECT responses FROM words WHERE word='{word}' IS NOT NULL;''')
+    c.execute(f'''SELECT responses FROM words WHERE word="{word}"''')
     data=c.fetchall()
     data=data[0]
     newd=list(data)
@@ -62,12 +62,19 @@ def returnResponsesPercentage(word):
       y=x/total
       percentage.append(y)
     percentage=np.array(percentage)
-    percentage=np.round(percentage,decimals=2,out=None)
     probability_dict={}
     for A,B in zip(unique, percentage):
       probability_dict[A]=B
     return probability_dict
     conn.close()
+
+#required function
+def chooseResponse(word):
+    dictn=returnResponsesPercentage(word)
+    response = list(dictn.keys())
+    chance=list(dictn.values())
+    chc=  npchoice(response,1,p=chance)
+    return chc
 
 #statistic function
 def showResponsesFor(word): 
@@ -93,14 +100,7 @@ def deleteWord(word):
     conn.commit()
     conn.close()
 
-#required function
-def chooseResponse(word):
-    dictn=returnResponsesPercentage(word)
-    response = list(dictn.keys())
-    chance=list(dictn.values())
-    chance[0]+=0.01
-    chc=  npchoice(response,1,p=chance)
-    return chc
+
 
 #statistic function
 def testChooseResponse(word):
